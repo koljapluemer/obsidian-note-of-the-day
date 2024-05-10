@@ -1,7 +1,5 @@
 import {
 	App,
-	Editor,
-	MarkdownView,
 	Modal,
 	Notice,
 	Plugin,
@@ -11,16 +9,16 @@ import {
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
+interface NoteOfDaySettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: NoteOfDaySettings = {
 	mySetting: "default",
 };
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class NoteOfDay extends Plugin {
+	settings: NoteOfDaySettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -33,13 +31,11 @@ export default class MyPlugin extends Plugin {
 		let noteOfTheDayData = {};
 		if (noteOfTheDayDataRaw) {
 			noteOfTheDayData = JSON.parse(noteOfTheDayDataRaw);
-			console.info("Loaded note of the day data", noteOfTheDayData);
 		}
 
-		const currentDate = new Date().toISOString();
+		const currentDate = new Date().toDateString();
 		if (dateOfNoteOfTheDayData !== currentDate) {
-			console.info("New day, resetting note of the day data");
-			dateOfNoteOfTheDayData = new Date().toISOString();
+			dateOfNoteOfTheDayData = new Date().toDateString();
 			localStorage.setItem(
 				"dateOfNoteOfTheDayData",
 				dateOfNoteOfTheDayData
@@ -63,22 +59,23 @@ export default class MyPlugin extends Plugin {
 					(a, b) =>
 						noteOfTheDayData[a] > noteOfTheDayData[b] ? a : b
 				);
-				console.info("Note of the day is", noteOfTheDay);
 				const fileOfTheDay = this.app.vault.getFileByPath(noteOfTheDay);
 				if (fileOfTheDay) {
-					this.app.workspace.openLinkText(fileOfTheDay.path, "", true);
+					this.app.workspace.openLinkText(
+						fileOfTheDay.path,
+						"",
+						true
+					);
 				} else {
 					new Notice("Note of the day not found");
 				}
 			},
 		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new NoteOfDaySettingTab(this.app, this));
 
 		this.registerEvent(
 			this.app.vault.on("modify", (file) => {
-				console.log("File modified", file.name);
 				// either iterate or set counter to 1 for dict obj of name file
 				if (noteOfTheDayData[file.name]) {
 					noteOfTheDayData[file.name] += 1;
@@ -108,7 +105,7 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
+class NoteOfDayModal extends Modal {
 	constructor(app: App) {
 		super(app);
 	}
@@ -124,10 +121,10 @@ class SampleModal extends Modal {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+class NoteOfDaySettingTab extends PluginSettingTab {
+	plugin: NoteOfDay;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: NoteOfDay) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
