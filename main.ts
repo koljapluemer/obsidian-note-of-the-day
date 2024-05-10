@@ -1,28 +1,12 @@
 import {
-	App,
-	Modal,
 	Notice,
 	Plugin,
-	PluginSettingTab,
-	Setting,
 } from "obsidian";
 
-// Remember to rename these classes and interfaces!
-
-interface NoteOfDaySettings {
-	mySetting: string;
-}
-
-const DEFAULT_SETTINGS: NoteOfDaySettings = {
-	mySetting: "default",
-};
 
 export default class NoteOfDay extends Plugin {
-	settings: NoteOfDaySettings;
 
 	async onload() {
-		await this.loadSettings();
-
 		// get/create dateOfNoteOfTheDayData from localStorage
 		let dateOfNoteOfTheDayData = localStorage.getItem(
 			"dateOfNoteOfTheDayData"
@@ -91,60 +75,4 @@ export default class NoteOfDay extends Plugin {
 	}
 
 	onunload() {}
-
-	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
-	}
-
-	async saveSettings() {
-		await this.saveData(this.settings);
-	}
-}
-
-class NoteOfDayModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText("Your note of the day...exists.");
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
-	}
-}
-
-class NoteOfDaySettingTab extends PluginSettingTab {
-	plugin: NoteOfDay;
-
-	constructor(app: App, plugin: NoteOfDay) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		const { containerEl } = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName("Setting #1")
-			.setDesc("It's a secret")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your secret")
-					.setValue(this.plugin.settings.mySetting)
-					.onChange(async (value) => {
-						this.plugin.settings.mySetting = value;
-						await this.plugin.saveSettings();
-					})
-			);
-	}
 }
