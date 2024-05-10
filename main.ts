@@ -56,8 +56,6 @@ export default class NoteOfDay extends Plugin {
 			},
 		});
 
-		this.addSettingTab(new NoteOfDaySettingTab(this.app, this));
-
 		this.registerEvent(
 			this.app.vault.on("modify", (file) => {
 				// either iterate or set counter to 1 for dict obj of name file
