@@ -1,11 +1,6 @@
-import {
-	Notice,
-	Plugin,
-} from "obsidian";
-
+import { Notice, Plugin } from "obsidian";
 
 export default class NoteOfDay extends Plugin {
-
 	async onload() {
 		// get/create dateOfNoteOfTheDayData from localStorage
 		let dateOfNoteOfTheDayData = localStorage.getItem(
@@ -51,7 +46,9 @@ export default class NoteOfDay extends Plugin {
 						true
 					);
 				} else {
-					new Notice(`Attempted to open ${noteOfTheDay} but could not find it.`);
+					new Notice(
+						`Attempted to open ${noteOfTheDay} but could not find it.`
+					);
 				}
 			},
 		});
@@ -59,10 +56,10 @@ export default class NoteOfDay extends Plugin {
 		this.registerEvent(
 			this.app.vault.on("modify", (file) => {
 				// either iterate or set counter to 1 for dict obj of name file
-				if (noteOfTheDayData[file.name]) {
-					noteOfTheDayData[file.name] += 1;
+				if (noteOfTheDayData[file.path]) {
+					noteOfTheDayData[file.path] += 1;
 				} else {
-					noteOfTheDayData[file.name] = 1;
+					noteOfTheDayData[file.path] = 1;
 				}
 				localStorage.setItem(
 					"noteOfTheDayData",
