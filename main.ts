@@ -51,7 +51,7 @@ export default class NoteOfDay extends Plugin {
 						true
 					);
 				} else {
-					new Notice("Note of the day not found");
+					new Notice(`Attempted to open ${noteOfTheDay} but could not find it.`);
 				}
 			},
 		});
@@ -68,6 +68,20 @@ export default class NoteOfDay extends Plugin {
 					"noteOfTheDayData",
 					JSON.stringify(noteOfTheDayData)
 				);
+			})
+		);
+
+		// mirror renames in noteOfTheDayData data
+		this.registerEvent(
+			this.app.vault.on("rename", (file, oldPath) => {
+				if (noteOfTheDayData[oldPath]) {
+					noteOfTheDayData[file.path] = noteOfTheDayData[oldPath];
+					delete noteOfTheDayData[oldPath];
+					localStorage.setItem(
+						"noteOfTheDayData",
+						JSON.stringify(noteOfTheDayData)
+					);
+				}
 			})
 		);
 	}
